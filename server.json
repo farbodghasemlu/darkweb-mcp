@@ -1,0 +1,25 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.farbodghasemlu/darkweb-mcp",
+  "title": "Onion Search",
+  "description": "Local, read-only onion search and text retrieval over Tor with content filtering.",
+  "repository": {
+    "url": "https://github.com/farbodghasemlu/darkweb-mcp",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "packages": [
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/farbodghasemlu/darkweb-mcp:1.0.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {"name": "CONTENT_FILTER", "description": "Default content filtering for all tools", "default": "true", "isRequired": false},
+        {"name": "ENGINES", "description": "Comma-separated engine identifiers, or all", "default": "all", "isRequired": false},
+        {"name": "TOR_BRIDGES", "description": "Bridge lines separated by newlines or semicolons", "isRequired": false}
+      ]
+    }
+  ]
+}
