@@ -3,7 +3,7 @@ requires = ["hatchling==1.27.0"]
 build-backend = "hatchling.build"
 [project]
 name = "onion-search-mcp"
-version = "1.0.0"
+version = "1.0.1"
 description = "Local, read-only onion search and text retrieval over Tor"
 license = "MIT"
 license-files = ["LICENSE"]
