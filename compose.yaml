@@ -1,0 +1,63 @@
+name: onion-search
+services:
+  tor:
+    build: .
+    image: onion-search-mcp:local
+    command: ["--tor-only"]
+    environment:
+      TOR_CONTROL_PASSWORD: ${TOR_CONTROL_PASSWORD:-onion-local-control}
+      TOR_BRIDGES: ${TOR_BRIDGES:-}
+    networks:
+      isolated:
+        ipv4_address: 172.29.71.2
+      egress: {}
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=96m,uid=10001,gid=10001,mode=1770"]
+    mem_limit: 256m
+    cpus: 1
+    pids_limit: 64
+    healthcheck:
+      test: ["CMD", "onion-search-mcp", "--check"]
+      interval: 10s
+      timeout: 8s
+      start_period: 180s
+      retries: 18
+    logging:
+      driver: none
+  server:
+    image: onion-search-mcp:local
+    build: .
+    command: ["--stdio"]
+    environment:
+      TOR_SOCKS: 172.29.71.2:9050
+      TOR_CONTROL: 172.29.71.2:9051
+      TOR_CONTROL_PASSWORD: ${TOR_CONTROL_PASSWORD:-onion-local-control}
+      CONTENT_FILTER: ${CONTENT_FILTER:-true}
+      ENGINES: ${ENGINES:-all}
+      CACHE_TTL_S: ${CACHE_TTL_S:-900}
+      KEYWORD_FILTER: ${KEYWORD_FILTER:-false}
+      FILTER_KEYWORDS: ${FILTER_KEYWORDS:-}
+    networks: [isolated]
+    depends_on:
+      tor:
+        condition: service_healthy
+    stdin_open: true
+    tty: false
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: ["/tmp:rw,noexec,nosuid,size=16m,uid=10001,gid=10001,mode=1770"]
+    mem_limit: 768m
+    cpus: 2
+    pids_limit: 64
+    logging:
+      driver: none
+networks:
+  isolated:
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.29.71.0/24
+  egress: {}

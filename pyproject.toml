@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+[project]
+name = "onion-search-mcp"
+version = "1.0.0"
+description = "Local, read-only onion search and text retrieval over Tor"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+dependencies = ["mcp>=1.20,<2","httpx[socks]>=0.28,<0.29","httpx-socks>=0.10,<0.12","stem==1.8.2","selectolax>=0.3,<0.5","trafilatura>=2.0,<3","pydantic>=2.11,<3","pydantic-settings>=2.10,<3","PyYAML>=6.0.2,<7"]
+[project.scripts]
+onion-search-mcp = "onion_search_mcp.cli:main"
+[dependency-groups]
+dev = ["pytest>=8,<10","pytest-asyncio>=1,<2","ruff>=0.14,<1","build>=1,<2"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/onion_search_mcp"]
+[tool.hatch.build.targets.wheel.force-include]
+"engines.yaml" = "onion_search_mcp/data/engines.yaml"
+"blocklists/csam.txt" = "onion_search_mcp/data/csam.txt"
+"blocklists/terms.txt" = "onion_search_mcp/data/terms.txt"
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+markers = ["integration: requires a local Tor instance and a private test onion service"]
+[tool.ruff]
+target-version = "py311"
+line-length = 160
+[tool.ruff.lint]
+select = ["E4","E7","E9","F","B","ASYNC"]

@@ -1,0 +1,28 @@
+name: test
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: 0.12.10
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run pytest -q -m 'not integration'
+      - run: docker compose config --quiet
+      - run: docker build -t onion-search-mcp:local .
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: 0.12.10
+      - run: uv sync --frozen
+      - run: sudo apt-get update && sudo apt-get install -y tor
+      - run: uv python install 3.11
+      - run: git clone https://github.com/torproject/chutney.git /tmp/onion-chutney && git -C /tmp/onion-chutney checkout 62b54a55215c94eb14adc22c5acd17b2ada04b76
+      - run: uv run python tests/integration/private.py
