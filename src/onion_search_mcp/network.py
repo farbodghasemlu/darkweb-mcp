@@ -59,7 +59,7 @@ class TorTransport:
             proxy = f"socks5://{quote(username)}:{self.session}@{self.settings.tor_socks}"
             transport = AsyncProxyTransport.from_url(proxy, rdns=True, retries=0)
             self.clients[host] = httpx.AsyncClient(transport=transport, trust_env=False, follow_redirects=False, headers=HEADERS, cookies=NoCookies(),
-                                                timeout=httpx.Timeout(15, connect=25), limits=httpx.Limits(max_connections=2, max_keepalive_connections=0))
+                                                timeout=httpx.Timeout(15, connect=None), limits=httpx.Limits(max_connections=2, max_keepalive_connections=0))
             if len(self.clients) > 128:
                 oldest = next(iter(self.clients))
                 if oldest != host:
